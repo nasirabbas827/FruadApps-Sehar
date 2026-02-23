@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}Feedback Control | SentiShield Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4 mb-5 px-lg-5">
+    <div class="row align-items-center mb-5">
+        <div class="col-md-7">
+            <h2 class="font-weight-bold mb-1" style="color: #0f172a;">User Feedback Manager</h2>
+            <p class="text-muted mb-0">Monitor, categorize, and resolve incoming user suggestions and bug reports.</p>
+        </div>
+        <div class="col-md-5 text-md-right mt-3">
+            <div class="btn-group shadow-sm" style="border-radius: 12px; overflow: hidden;">
+                <div class="btn btn-white border-right px-4 py-2">
+                    <span class="d-block small text-muted font-weight-bold text-uppercase">Pending</span>
+                    <span class="h5 mb-0 font-weight-bold text-warning">{{ feedback_list|selectattr('4', 'equalto', 'pending')|list|length }}</span>
+                </div>
+                <div class="btn btn-white px-4 py-2">
+                    <span class="d-block small text-muted font-weight-bold text-uppercase">Total</span>
+                    <span class="h5 mb-0 font-weight-bold text-dark">{{ feedback_list|length }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if feedback_list %}
+        <div class="card border-0 shadow-sm" style="border-radius: 20px; overflow: hidden;">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead style="background-color: #f8fafc; border-bottom: 2px solid #edf2f7;">
+                        <tr>
+                            <th class="px-4 py-3 text-muted small text-uppercase" style="width: 80px;">Log</th>
+                            <th class="py-3 text-muted small text-uppercase">Submitter</th>
+                            <th class="py-3 text-muted small text-uppercase">Message Detail</th>
+                            <th class="py-3 text-muted small text-uppercase text-center">Lifecycle</th>
+                            <th class="py-3 text-muted small text-uppercase">Timeline</th>
+                            <th class="px-4 py-3 text-muted small text-uppercase text-right">Moderation Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white">
+                        {% for fb in feedback_list %}
+                        <tr class="{% if fb[4] == 'pending' %}bg-soft-light{% endif %}">
+                            <td class="px-4">
+                                <code class="text-primary font-weight-bold">#{{ fb[0] }}</code>
+                            </td>
+                            <td>
+                                <div class="font-weight-bold text-dark">{{ fb[2] }}</div>
+                                <div class="x-small text-muted">User ID: {{ fb[1] }}</div>
+                            </td>
+                            <td>
+                                <div class="text-muted" style="max-width: 350px; font-size: 0.9rem; line-height: 1.5;">
+                                    {{ fb[3] | truncate(150) }}
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                {% if fb[4] == 'pending' %}
+                                    <span class="status-indicator status-pending">Pending</span>
+                                {% elif fb[4] == 'read' %}
+                                    <span class="status-indicator status-read">Read</span>
+                                {% else %}
+                                    <span class="status-indicator status-resolved">Resolved</span>
+                                {% endif %}
+                            </td>
+                            <td class="small">
+                                <div class="text-dark"><i class="far fa-clock mr-1 text-muted"></i>{{ fb[5].strftime('%d %b, %Y') }}</div>
+                                {% if fb[6] %}
+                                    <div class="text-success x-small font-weight-bold mt-1">Updated: {{ fb[6].strftime('%d %b') }}</div>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 text-right">
+                                <form action="{{ url_for('update_feedback_status', feedback_id=fb[0]) }}" method="POST" class="form-inline justify-content-end">
+                                    <select name="status" class="custom-select custom-select-sm border-0 bg-light mr-2" style="border-radius: 8px; font-weight: 600;">
+                                        <option value="pending" {% if fb[4]=='pending' %}selected{% endif %}>Pending</option>
+                                        <option value="read"    {% if fb[4]=='read' %}selected{% endif %}>Read</option>
+                                        <option value="resolved"{% if fb[4]=='resolved' %}selected{% endif %}>Resolved</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-primary btn-sm px-3 shadow-sm" style="border-radius: 8px;">
+                                        Apply
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="text-center py-5 bg-white shadow-sm border" style="border-radius: 24px;">
+            <i class="fas fa-comment-slash fa-4x text-light mb-4"></i>
+            <h4 class="font-weight-bold">Inbox Empty</h4>
+            <p class="text-muted">No user feedback has been submitted to the system yet.</p>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .bg-soft-light { background-color: rgba(248, 250, 252, 0.5); }
+    .x-small { font-size: 0.75rem; }
+    
+    /* Status Indicators */
+    .status-indicator {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .status-pending { background: #fef3c7; color: #92400e; }
+    .status-read { background: #e0f2fe; color: #075985; }
+    .status-resolved { background: #dcfce7; color: #166534; }
+
+    .table tbody tr:hover { background-color: #f8fafc !important; }
+    .btn-white { background: #fff; color: #64748b; }
+    
+    .custom-select:focus {
+        box-shadow: none;
+        border: 1px solid #6366f1;
+    }
+</style>
+{% endblock %}

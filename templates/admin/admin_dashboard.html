@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block title %}System Overview | SentiShield Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4" style="background-color: #f8fafc; min-height: 90vh;">
+    <div class="row px-lg-4">
+
+        <div class="col-xl-3 col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm" style="border-radius: 20px; position: sticky; top: 20px;">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <div class="bg-dark d-inline-block p-3 rounded-circle mb-2">
+                            <i class="fas fa-user-shield text-white fa-lg"></i>
+                        </div>
+                        <h5 class="font-weight-bold mb-0">Root Admin</h5>
+                        <p class="small text-muted">System Controller</p>
+                    </div>
+                    
+                    <div class="nav flex-column nav-pills admin-nav">
+                        <a class="nav-link active mb-2" href="{{ url_for('admin_dashboard') }}">
+                            <i class="fas fa-chart-line mr-3"></i> System Overview
+                        </a>
+                        <a class="nav-link active mb-2 text-white" href="{{ url_for('view_applications') }}">
+                            <i class="fas fa-layer-group mr-3"></i> App Management
+                        </a>
+                        <a class="nav-link active mb-2 text-white" href="{{ url_for('admin_reviews') }}">
+                            <i class="fas fa-shield-virus mr-3"></i> Fraud Intelligence
+                        </a>
+                        <hr class="my-3">
+                        <a class="nav-link active text-danger" href="{{ url_for('logout') }}">
+                            <i class="fas fa-power-off mr-3"></i>Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-9 col-lg-8">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h3 class="font-weight-bold" style="color: #0f172a;">Command Dashboard</h3>
+                <span class="badge badge-light border px-3 py-2 text-muted">
+                    <i class="fas fa-clock mr-2"></i>Live System Status
+                </span>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 18px;">
+                        <div class="card-body p-4 d-flex align-items-center" style="background: linear-gradient(45deg, #0f172a, #1e293b);">
+                            <div class="rounded-lg p-3 mr-4" style="background: rgba(255,255,255,0.1);">
+                                <i class="fas fa-cubes fa-2x text-white"></i>
+                            </div>
+                            <div>
+                                <h6 class="text-white-50 small text-uppercase mb-1" style="letter-spacing: 1px;">Total Applications</h6>
+                                <h2 class="text-white font-weight-bold mb-0">{{ total_applications }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 18px;">
+                        <div class="card-body p-4 d-flex align-items-center bg-white">
+                            <div class="rounded-lg p-3 mr-4 bg-light text-danger">
+                                <i class="fas fa-user-ninja fa-2x"></i>
+                            </div>
+                            <div>
+                                <h6 class="text-muted small text-uppercase mb-1" style="letter-spacing: 1px;">Threats Flagged</h6>
+                                <h2 class="text-dark font-weight-bold mb-0">{{ fake_reviews|length }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm" style="border-radius: 20px;">
+                <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+                    <h5 class="font-weight-bold mb-0"><i class="fas fa-skull-crossbones text-danger mr-2"></i>Flagged Fraud Reports</h5>
+                    <button class="btn btn-sm btn-outline-dark" onclick="window.location.reload();">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    {% if fake_reviews %}
+                    <div class="table-responsive">
+                        <table class="table table-borderless table-hover mb-0">
+                            <thead class="bg-light text-muted small text-uppercase">
+                                <tr>
+                                    <th class="px-4 py-3">Reference</th>
+                                    <th class="py-3">App ID</th>
+                                    <th class="py-3">Content Snippet</th>
+                                    <th class="py-3">Sentiment</th>
+                                    <th class="px-4 py-3 text-right">Moderation</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for review in fake_reviews %}
+                                <tr class="align-middle">
+                                    <td class="px-4 font-weight-bold text-muted">#{{ review[0] }}</td>
+                                    <td><span class="badge badge-secondary py-1 px-2">ID: {{ review[2] }}</span></td>
+                                    <td style="max-width: 250px;">
+                                        <div class="text-truncate small text-dark" title="{{ review[3] }}">
+                                            {{ review[3] }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="font-weight-bold {% if review[4] < 0.3 %}text-danger{% else %}text-warning{% endif %}">
+                                            {{ review[4] | round(2) }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 text-right">
+                                        <form action="{{ url_for('delete_fake_review', review_id=review[0]) }}" method="POST" 
+                                              onsubmit="return confirm('Secure Purge: Are you sure?');">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm border-0 rounded-circle">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-shield-check fa-3x text-light mb-3"></i>
+                        <p class="text-muted">System integrity secure. No fraudulent reviews found.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Admin UI Overrides */
+    .admin-nav .nav-link {
+        border-radius: 12px;
+        padding: 12px 20px;
+        transition: all 0.2s ease;
+        font-weight: 500;
+    }
+    .admin-nav .nav-link.active {
+        background: #0f172a !important;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+    }
+    .admin-nav .nav-link:not(.active):hover {
+        background: #f1f5f9;
+        color: #6366f1 !important;
+    }
+    .table thead th {
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+    .table tbody tr {
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .table tbody tr:last-child {
+        border-bottom: none;
+    }
+</style>
+{% endblock %}

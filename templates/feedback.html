@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}My Feedback | SentiShield Support{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="text-center mb-5">
+        <h2 class="font-weight-bold" style="color: #0f172a;">Feedback & Support</h2>
+        <p class="text-muted">Your insights help us refine the SentiShield ecosystem.</p>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm" style="border-radius: 20px; background: #f8fafc;">
+                <div class="card-body p-4">
+                    <h5 class="font-weight-bold mb-3 text-dark">Submit New Ticket</h5>
+                    <form method="POST">
+                        <div class="form-group mb-4">
+                            <label for="feedback_text" class="small font-weight-bold text-muted text-uppercase">Message</label>
+                            <textarea class="form-control border-0 shadow-none" 
+                                      id="feedback_text" 
+                                      name="feedback_text" 
+                                      rows="6" 
+                                      placeholder="Report a bug, suggest a feature, or tell us what you think..." 
+                                      required 
+                                      style="border-radius: 12px; font-size: 0.95rem; resize: none;"></textarea>
+                            <div class="d-flex justify-content-between mt-2">
+                                <small class="text-muted">Max 2000 chars</small>
+                                <small id="char-count" class="text-primary font-weight-bold">0</small>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block py-3 shadow-sm" style="border-radius: 12px; font-weight: bold;">
+                            <i class="fas fa-paper-plane mr-2"></i> Send Feedback
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <h5 class="font-weight-bold mb-3 text-dark">Submission History</h5>
+            
+            {% if feedback_list %}
+                <div class="card border-0 shadow-sm" style="border-radius: 20px; overflow: hidden;">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead style="background-color: #0f172a; color: #fff;">
+                                <tr>
+                                    <th class="px-4 border-0 small text-uppercase" style="width: 80px;">Log</th>
+                                    <th class="border-0 small text-uppercase">Feedback Detail</th>
+                                    <th class="border-0 small text-uppercase text-center">Status</th>
+                                    <th class="px-4 border-0 small text-uppercase text-right">Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white">
+                                {% for fb in feedback_list %}
+                                <tr>
+                                    <td class="px-4 text-muted font-weight-bold">#{{ fb[0] }}</td>
+                                    <td>
+                                        <div class="text-dark mb-1" style="font-size: 0.9rem; line-height: 1.4; max-width: 400px;">
+                                            {{ fb[1] | truncate(120) }}
+                                        </div>
+                                        {% if fb[4] %}
+                                        <small class="text-muted"><i class="fas fa-history mr-1"></i>Updated: {{ fb[4].strftime('%d %b') }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        {% if fb[2] == 'pending' %}
+                                            <span class="badge badge-soft-warning px-3 py-2">Pending</span>
+                                        {% elif fb[2] == 'read' %}
+                                            <span class="badge badge-soft-info px-3 py-2">Reviewed</span>
+                                        {% else %}
+                                            <span class="badge badge-soft-success px-3 py-2">Resolved</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-4 text-right">
+                                        <span class="d-block font-weight-bold text-dark small">{{ fb[3].strftime('%d %b %Y') }}</span>
+                                        <span class="text-muted x-small">{{ fb[3].strftime('%I:%M %p') }}</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center py-5 bg-white shadow-sm border" style="border-radius: 20px;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/4076/4076549.png" style="width: 80px; opacity: 0.5;" alt="Empty" class="mb-3">
+                    <h6 class="text-muted">No previous feedback logs found.</h6>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Status Badges */
+    .badge-soft-warning { background: #fffbeb; color: #d97706; border-radius: 8px; font-weight: 700; }
+    .badge-soft-info { background: #f0f9ff; color: #0284c7; border-radius: 8px; font-weight: 700; }
+    .badge-soft-success { background: #f0fdf4; color: #16a34a; border-radius: 8px; font-weight: 700; }
+    
+    .x-small { font-size: 0.7rem; }
+    .table thead th { letter-spacing: 0.5px; padding: 15px 10px; }
+    .table tbody tr:hover { background-color: #f8fafc !important; }
+    
+    textarea:focus {
+        background-color: #fff !important;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+        border: 1px solid #6366f1 !important;
+    }
+</style>
+
+<script>
+    const textarea = document.getElementById('feedback_text');
+    const charCount = document.getElementById('char-count');
+    
+    textarea.addEventListener('input', () => {
+        const count = textarea.value.length;
+        charCount.textContent = count;
+        if (count > 1900) charCount.classList.replace('text-primary', 'text-danger');
+        else charCount.classList.replace('text-danger', 'text-primary');
+    });
+</script>
+{% endblock %}

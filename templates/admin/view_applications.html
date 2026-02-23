@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Application Inventory | SentiShield Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4 mb-5 px-lg-5">
+    <div class="row align-items-center mb-5">
+        <div class="col-md-6">
+            <h2 class="font-weight-bold mb-1" style="color: #0f172a;">Application Inventory</h2>
+            <p class="text-muted mb-0">Manage analyzed applications and verify their fraud status.</p>
+        </div>
+        <div class="col-md-6 text-md-right mt-3 mt-md-0">
+            <a href="{{ url_for('add_application') }}" class="btn btn-primary btn-lg shadow-sm" style="border-radius: 12px; font-weight: 600;">
+                <i class="fas fa-plus-circle mr-2"></i> Register New App
+            </a>
+        </div>
+    </div>
+
+    {% if applications %}
+        <div class="card border-0 shadow-sm" style="border-radius: 20px; overflow: hidden;">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead style="background-color: #f8fafc; border-bottom: 2px solid #edf2f7;">
+                        <tr>
+                            <th class="px-4 py-3 text-muted small text-uppercase" style="width: 80px;">ID</th>
+                            <th class="py-3 text-muted small text-uppercase">Application</th>
+                            <th class="py-3 text-muted small text-uppercase">Rating</th>
+                            <th class="py-3 text-muted small text-uppercase">Category</th>
+                            <th class="py-3 text-muted small text-uppercase text-center">Status Decision</th>
+                            <th class="py-3 text-muted small text-uppercase text-center">Icon</th>
+                            <th class="px-4 py-3 text-muted small text-uppercase text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white">
+                        {% for app in applications %}
+                        <tr>
+                            <td class="px-4">
+                                <code class="text-primary font-weight-bold">#{{ app['app_id'] }}</code>
+                            </td>
+                            <td>
+                                <div class="font-weight-bold text-dark">{{ app['application_name'] }}</div>
+                                <div class="text-truncate text-muted x-small" style="max-width: 180px;">{{ app['description'] }}</div>
+                            </td>
+                            <td>
+                                <span class="badge badge-light border text-dark font-weight-bold">
+                                    <i class="fas fa-star text-warning mr-1"></i>{{ app['rating'] }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge badge-soft-indigo px-3 py-2">{{ app['category'] }}</span>
+                            </td>
+                            <td class="text-center">
+                                <form action="{{ url_for('toggle_app_status', app_id=app['app_id']) }}" method="POST">
+                                    <button type="submit" 
+                                            class="btn btn-sm {% if app['status'] == 'genuine' %}btn-soft-success{% else %}btn-soft-danger{% endif %} status-toggle-btn">
+                                        {% if app['status'] == 'genuine' %}
+                                            <i class="fas fa-check-circle mr-1"></i> Genuine
+                                        {% else %}
+                                            <i class="fas fa-exclamation-triangle mr-1"></i> Fraud
+                                        {% endif %}
+                                    </button>
+                                </form>
+                            </td>
+                            <td class="text-center">
+                                {% if app['app_image'] %}
+                                    <img src="{{ url_for('static', filename=app['app_image'].replace('static/', '').replace('static\\', '').lstrip('/')) }}"
+                                         class="rounded shadow-sm border"
+                                         style="width: 40px; height: 40px; object-fit: cover;">
+                                {% else %}
+                                    <i class="fas fa-image text-light fa-2x"></i>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 text-right">
+                                <div class="d-flex justify-content-end">
+                                    <a href="{{ url_for('edit_application', app_id=app['app_id']) }}" 
+                                       class="btn btn-outline-warning btn-sm mr-2 action-icon-btn" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{{ url_for('delete_application', app_id=app['app_id']) }}" 
+                                       class="btn btn-outline-danger btn-sm action-icon-btn"
+                                       onclick="return confirm('DANGER: Delete this application permanently?')" title="Delete">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="text-center py-5 glass-card">
+            <i class="fas fa-folder-open fa-4x text-light mb-4"></i>
+            <h4 class="font-weight-bold">Inventory Empty</h4>
+            <p class="text-muted">No applications have been added for analysis yet.</p>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .badge-soft-indigo { background-color: #eef2ff; color: #4338ca; font-weight: 700; border-radius: 8px; }
+    
+    /* Status Toggle Buttons */
+    .status-toggle-btn {
+        border-radius: 10px;
+        font-weight: 800;
+        width: 110px;
+        border: none;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .btn-soft-success { background-color: #ecfdf5; color: #059669; }
+    .btn-soft-success:hover { background-color: #059669; color: white; transform: scale(1.05); }
+    
+    .btn-soft-danger { background-color: #fff1f2; color: #e11d48; }
+    .btn-soft-danger:hover { background-color: #e11d48; color: white; transform: scale(1.05); }
+
+    .action-icon-btn {
+        width: 35px;
+        height: 35px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .x-small { font-size: 0.75rem; }
+</style>
+{% endblock %}

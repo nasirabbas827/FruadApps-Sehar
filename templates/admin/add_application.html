@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}Deploy Application | SentiShield Admin{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-xl-10 col-lg-11">
+            <div class="card shadow-lg border-0" style="border-radius: 24px; overflow: hidden;">
+                <div class="card-header py-4 text-center" style="background: #0f172a; color: white;">
+                    <div class="mb-2">
+                        <i class="fas fa-rocket fa-2x text-primary"></i>
+                    </div>
+                    <h3 class="mb-0 font-weight-bold text-white">Register New Application</h3>
+                    <p class="small mb-0 text-muted">Initialize a new entity for sentiment analysis</p>
+                </div>
+
+                <div class="card-body p-4 p-md-5 bg-white">
+                    <form method="POST" action="{{ url_for('add_application') }}" enctype="multipart/form-data">
+                        
+                        <div class="row">
+                            <div class="col-md-7 border-right pr-md-5">
+                                <h5 class="text-primary font-weight-bold mb-4"><i class="fas fa-info-circle mr-2"></i>Primary Details</h5>
+                                
+                                <div class="form-group mb-4">
+                                    <label for="application_name" class="small font-weight-bold text-muted uppercase">Application Name</label>
+                                    <input type="text" class="form-control modern-input" id="application_name" name="application_name" placeholder="e.g. WhatsApp" required autofocus>
+                                </div>
+
+                                <div class="form-group mb-4">
+                                    <label for="link" class="small font-weight-bold text-muted uppercase">Application Link (URL)</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-light border-0"><i class="fas fa-link text-muted"></i></span>
+                                        </div>
+                                        <input type="url" class="form-control modern-input border-left-0" id="link" name="link" placeholder="https://..." required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-4">
+                                    <label for="description" class="small font-weight-bold text-muted uppercase">Core Description</label>
+                                    <textarea class="form-control modern-input" id="description" name="description" rows="6" placeholder="Describe the application's purpose..." required></textarea>
+                                </div>
+                            </div>
+
+                            <div class="col-md-5 pl-md-5 mt-4 mt-md-0">
+                                <h5 class="text-primary font-weight-bold mb-4"><i class="fas fa-tags mr-2"></i>Classification</h5>
+
+                                <div class="row">
+                                    <div class="col-6 col-md-12 mb-4">
+                                        <label for="rating" class="small font-weight-bold text-muted uppercase">Initial Rating</label>
+                                        <input type="number" step="0.1" min="0" max="5" class="form-control modern-input" id="rating" name="rating" value="0.0">
+                                    </div>
+                                    <div class="col-6 col-md-12 mb-4">
+                                        <label for="category" class="small font-weight-bold text-muted uppercase">Category</label>
+                                        <select class="form-control modern-input" id="category" name="category">
+                                            <option value="">Select...</option>
+                                            <option value="Social">Social</option>
+                                            <option value="Communication">Communication</option>
+                                            <option value="Productivity">Productivity</option>
+                                            <option value="Games">Games</option>
+                                            <option value="Finance">Finance</option>
+                                            <option value="Education">Education</option>
+                                            <option value="Health & Fitness">Health & Fitness</option>
+                                            <option value="Entertainment">Entertainment</option>
+                                            <option value="Utilities">Utilities</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mt-2">
+                                    <label class="small font-weight-bold text-muted uppercase">Application Visual</label>
+                                    <div class="upload-container text-center p-4 border rounded" style="background: #f8fafc; border-style: dashed !important;">
+                                        <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-2"></i>
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="app_image" name="app_image" accept="image/*" required>
+                                            <label class="custom-file-label text-truncate" for="app_image">Click to upload icon</label>
+                                        </div>
+                                        <small class="text-muted d-block mt-2">PNG/JPG (Max 2MB)</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-5">
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                            <a href="{{ url_for('view_applications') }}" class="btn btn-link text-muted order-2 order-md-1 mt-3 mt-md-0">
+                                <i class="fas fa-chevron-left mr-2"></i> Back to Applications
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg px-5 order-1 order-md-2 shadow" style="border-radius: 12px; font-weight: 700;">
+                                <i class="fas fa-check-circle mr-2"></i> Finalize Registration
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .modern-input {
+        background-color: #f8fafc !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 10px !important;
+        padding: 12px 15px !important;
+    }
+    .modern-input:focus {
+        background-color: #fff !important;
+        border-color: #6366f1 !important;
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1) !important;
+    }
+    .uppercase { letter-spacing: 0.05em; font-size: 0.7rem; display: block; }
+    .custom-file-label::after { background-color: #0f172a; color: white; }
+    .upload-container:hover { border-color: #6366f1 !important; background: #f1f5f9; transition: 0.3s; }
+</style>
+
+<script>
+    document.querySelector('.custom-file-input').addEventListener('change', function(e) {
+        var fileName = e.target.files[0].name;
+        var nextSibling = e.target.nextElementSibling;
+        nextSibling.innerText = fileName;
+    });
+</script>
+{% endblock %}

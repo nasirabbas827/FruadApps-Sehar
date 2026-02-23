@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block title %}Modify Entity | SentiShield Admin{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-xl-10 col-lg-11">
+            <div class="card shadow-lg border-0" style="border-radius: 24px; overflow: hidden;">
+                
+                <div class="card-header py-4 text-center" style="background: #0f172a; color: white;">
+                    <div class="mb-2">
+                        <i class="fas fa-edit fa-2x text-warning"></i>
+                    </div>
+                    <h3 class="mb-0 font-weight-bold text-white">Modify Application Metadata</h3>
+                    <p class="small mb-0 text-muted">Updating entry for Identifier: <code class="text-primary">#{{ application['app_id'] }}</code></p>
+                </div>
+
+                <div class="card-body p-4 p-md-5 bg-white">
+                    <form method="POST" action="{{ url_for('edit_application', app_id=application['app_id']) }}" enctype="multipart/form-data">
+                        
+                        <div class="row">
+                            <div class="col-md-7 border-right pr-md-5">
+                                <h5 class="text-dark font-weight-bold mb-4"><i class="fas fa-database mr-2 text-muted"></i>Core Information</h5>
+                                
+                                <div class="form-group mb-4">
+                                    <label for="application_name" class="small font-weight-bold text-muted text-uppercase">Application Name</label>
+                                    <input type="text" class="form-control modern-input" id="application_name" name="application_name" 
+                                           value="{{ application['application_name'] }}" required autofocus>
+                                </div>
+
+                                <div class="form-group mb-4">
+                                    <label for="link" class="small font-weight-bold text-muted text-uppercase">Source URL</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-light border-0"><i class="fas fa-external-link-alt text-muted"></i></span>
+                                        </div>
+                                        <input type="url" class="form-control modern-input border-left-0" id="link" name="link" 
+                                               value="{{ application['link'] }}" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-4">
+                                    <label for="description" class="small font-weight-bold text-muted text-uppercase">System Description</label>
+                                    <textarea class="form-control modern-input" id="description" name="description" rows="7" required>{{ application['description'] }}</textarea>
+                                </div>
+                            </div>
+
+                            <div class="col-md-5 pl-md-5 mt-4 mt-md-0">
+                                <h5 class="text-dark font-weight-bold mb-4"><i class="fas fa-chart-pie mr-2 text-muted"></i>Metadata</h5>
+
+                                <div class="row">
+                                    <div class="col-6 col-md-12 mb-4">
+                                        <label for="rating" class="small font-weight-bold text-muted text-uppercase">System Rating</label>
+                                        <input type="number" step="0.1" min="0" max="5" class="form-control modern-input" id="rating" name="rating" 
+                                               value="{{ application['rating'] | default('0.0') }}">
+                                    </div>
+                                    <div class="col-6 col-md-12 mb-4">
+                                        <label for="category" class="small font-weight-bold text-muted text-uppercase">Entity Category</label>
+                                        <select class="form-control modern-input" id="category" name="category">
+                                            {% set categories = ['Social', 'Communication', 'Productivity', 'Games', 'Finance', 'Education', 'Health & Fitness', 'Entertainment', 'Utilities', 'Other'] %}
+                                            {% for cat in categories %}
+                                                <option value="{{ cat }}" {% if application['category'] == cat %}selected{% endif %}>{{ cat }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="asset-panel p-3 rounded mt-2" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                                    <label class="small font-weight-bold text-muted text-uppercase d-block mb-3">Asset Management</label>
+                                    
+                                    <div class="text-center mb-4">
+                                        {% if application['app_image'] %}
+                                            <div class="position-relative d-inline-block">
+                                                <img src="{{ url_for('static', filename=application['app_image'].replace('static/', '').replace('static\\', '').lstrip('/')) }}" 
+                                                     class="img-thumbnail shadow-sm mb-2" style="width: 120px; height: 120px; object-fit: cover; border-radius: 15px;">
+                                                <span class="badge badge-dark position-absolute" style="bottom: 15px; right: -5px;">Active</span>
+                                            </div>
+                                        {% else %}
+                                            <div class="py-4 border rounded mb-2" style="border-style: dashed !important;">
+                                                <i class="fas fa-image fa-2x text-light"></i>
+                                                <p class="small text-muted mb-0">No active asset</p>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="custom-file small">
+                                        <input type="file" class="custom-file-input" id="app_image" name="app_image" accept="image/*">
+                                        <label class="custom-file-label text-truncate" for="app_image" style="border-radius: 8px;">Override Image...</label>
+                                    </div>
+                                    <p class="text-center x-small text-muted mt-2 mb-0">Leave empty to preserve existing file.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-5">
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+                            <a href="{{ url_for('view_applications') }}" class="btn btn-link text-muted order-2 order-md-1 mt-3 mt-md-0">
+                                <i class="fas fa-times mr-2"></i> Discard Changes
+                            </a>
+                            <button type="submit" class="btn btn-warning btn-lg px-5 order-1 order-md-2 shadow-sm font-weight-bold" style="border-radius: 12px; color: #000;">
+                                <i class="fas fa-sync-alt mr-2"></i> Commit Updates
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .modern-input {
+        background-color: #f8fafc !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 10px !important;
+        padding: 12px 15px !important;
+        transition: all 0.2s ease;
+    }
+    .modern-input:focus {
+        background-color: #fff !important;
+        border-color: #f59e0b !important; /* Warning Yellow */
+        box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.1) !important;
+    }
+    .x-small { font-size: 0.75rem; }
+    .custom-file-label::after { background-color: #0f172a; color: white; border-radius: 0 8px 8px 0; }
+    .asset-panel { transition: border-color 0.3s; }
+    .asset-panel:focus-within { border-color: #f59e0b !important; }
+</style>
+
+<script>
+    document.querySelector('.custom-file-input').addEventListener('change', function(e) {
+        var fileName = e.target.files[0]?.name || 'Choose file';
+        e.target.nextElementSibling.innerText = fileName;
+    });
+</script>
+{% endblock %}

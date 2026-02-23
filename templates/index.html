@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+
+{% block title %}SentiShield | AI-Powered Fraud Detection{% endblock %}
+
+{% block content %}
+
+<div class="jumbotron text-center jumbotron-fluid" 
+     style="background-image: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.8)), 
+            url('https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'); 
+            background-size: cover; background-position: center; color: white; border-radius: 0 0 50px 50px; margin-top: -40px;">
+    <div class="container py-5">
+        <span class="badge badge-pill badge-primary mb-3 px-3 py-2" style="background: rgba(99, 102, 241, 0.3); border: 1px solid var(--accent);">
+            🚀 AI-Powered Sentiment Analysis
+        </span>
+        <h1 style="font-weight: 800; font-size: 3.8rem; letter-spacing: -1px; margin-bottom: 1.2rem; color:white;">
+            Expose the Truth <br><span style="color: #6366f1;">Behind the Reviews</span>
+        </h1>
+        <p class="lead" style="font-size: 1.2rem; max-width: 650px; margin: 0 auto 2.5rem; color: #cbd5e1;">
+            SentiShield uses advanced NLP to separate genuine user feedback from orchestrated fraud campaigns. Don't get fooled by 5-star bots.
+        </p>
+        
+        <form method="POST" class="form-inline justify-content-center">
+            <div class="input-group mb-3 shadow-lg" style="width: 60%; border-radius: 50px; overflow: hidden; background: white; padding: 5px;">
+                <div class="input-group-prepend">
+                    <span class="input-group-text bg-transparent border-0"><i class="fas fa-search text-muted"></i></span>
+                </div>
+                <input type="text" class="form-control border-0 px-4" name="search_query" 
+                       placeholder="Search apps by name or description..." 
+                       value="{{ request.form.get('search_query', '') }}"
+                       style="font-size: 1.1rem; outline: none; box-shadow: none;">
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-primary px-5" style="border-radius: 50px !important;">Verify App</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="container" style="margin-top: -50px;">
+    <div class="row text-center">
+        <div class="col-md-10 offset-md-1">
+            <div class="bg-white p-4 shadow-sm" style="border-radius: 15px; display: flex; justify-content: space-around; align-items: center;">
+                <div><h4 class="mb-0 font-weight-bold">99.2%</h4><small class="text-muted uppercase">Accuracy Rate</small></div>
+                <div style="width: 1px; height: 40px; background: #e2e8f0;"></div>
+                <div><h4 class="mb-0 font-weight-bold">1.2M+</h4><small class="text-muted uppercase">Reviews Analyzed</small></div>
+                <div style="width: 1px; height: 40px; background: #e2e8f0;"></div>
+                <div><h4 class="mb-0 font-weight-bold">Real-Time</h4><small class="text-muted uppercase">Sentiment Scoring</small></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5 pt-5">
+    <div class="text-center mb-5">
+        <h2 style="font-weight: 700;">How SentiShield Works</h2>
+        <p class="text-muted">Three layers of analysis to ensure review integrity</p>
+    </div>
+    <div class="row text-center">
+        <div class="col-md-4 px-4">
+            <div class="mb-4 text-primary"><i class="fas fa-database fa-3x"></i></div>
+            <h5 class="font-weight-bold">Data Extraction</h5>
+            <p class="small text-muted">We pull thousands of reviews directly from app store metadata for a comprehensive dataset.</p>
+        </div>
+        <div class="col-md-4 px-4">
+            <div class="mb-4 text-primary"><i class="fas fa-brain fa-3x"></i></div>
+            <h5 class="font-weight-bold">Sentiment NLP</h5>
+            <p class="small text-muted">Our AI detects linguistic patterns, repetitive phrasing, and emotional inconsistencies.</p>
+        </div>
+        <div class="col-md-4 px-4">
+            <div class="mb-4 text-primary"><i class="fas fa-chart-line fa-3x"></i></div>
+            <h5 class="font-weight-bold">Fraud Scoring</h5>
+            <p class="small text-muted">Every app receives a "Trust Score" based on the ratio of authentic vs. suspicious reviews.</p>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-5 mb-5">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h3 style="font-weight: 800; color: #0f172a; margin-bottom: 0;">Verified Applications</h3>
+            <p class="text-muted mb-0">Browse recent analysis reports</p>
+        </div>
+        <a href="#" class="btn btn-outline-primary btn-sm px-3" style="border-radius: 20px;">View All</a>
+    </div>
+
+<div class="row">
+    {% if applications %}
+        {% for app in applications %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100 border-0 shadow-sm hover-card position-relative" 
+                 style="border-radius: 16px; overflow: hidden; transition: transform 0.25s, box-shadow 0.25s;">
+                
+                <!-- Status Badge (top-right corner) -->
+                <span class="badge position-absolute" 
+                      style="top: 12px; right: 12px; font-size: 0.85rem; padding: 6px 12px; z-index: 10; 
+                             {% if app[7] == 'genuine' %}background:#10b981; color:white;{% else %}background:#ef4444; color:white;{% endif %} 
+                             border-radius: 12px; font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+                    {{ app[7] | capitalize }}
+                </span>
+
+                <div class="position-relative" style="height: 200px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; padding: 30px;">
+                    <img src="{{ url_for('static', filename=app[5].replace('static/', '').replace('static\\', '').lstrip('/')) if app[5] else 'uploads/placeholder-app.png' }}"
+                         class="card-img-top" alt="{{ app[1] }}" 
+                         style="max-height: 100%; width: auto; object-fit: contain;">
+                    <span class="badge badge-dark position-absolute" style="bottom: 12px; left: 12px; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px);">
+                        {{ app[4] | default('General') }}
+                    </span>
+                </div>
+                
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title font-weight-bold mb-0" style="color: #0f172a;">
+                            {{ app[1] }}
+                        </h5>
+                        <span class="text-warning font-weight-bold">
+                            ★ {{ app[3] | round(1) if app[3] else 'N/A' }}
+                        </span>
+                    </div>
+
+                    <p class="card-text text-muted small mb-4" style="height: 45px; overflow: hidden;">
+                        {{ app[2] | truncate(85) }}
+                    </p>
+
+                    {% if app[6] is not none %}
+                    <div class="mb-4 p-2 rounded-lg" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <small class="text-muted font-weight-bold uppercase" style="font-size: 0.65rem;">
+                                Trust Level
+                            </small>
+                            <small class="font-weight-bold" 
+                                   style="color: {% if app[6] > 5 %}#10b981{% elif app[6] < 3 %}#ef4444{% else %}#f59e0b{% endif %}">
+                                {{ app[6] | round(1) }}/10
+                            </small>
+                        </div>
+                        <div class="progress" style="height: 6px; border-radius: 10px;">
+                            <div class="progress-bar" role="progressbar" 
+                                 style="width: {{ (app[6] | float) * 10 }}%; 
+                                        background: linear-gradient(to right, 
+                                            {% if app[6] > 5 %}#10b981{% elif app[6] < 3 %}#ef4444{% else %}#f59e0b{% endif %}, 
+                                            {% if app[6] > 5 %}#059669{% elif app[6] < 3 %}#dc2626{% else %}#d97706{% endif %});">
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <a href="{{ url_for('review_application', app_id=app[0]) }}" 
+                       class="btn btn-block btn-primary mt-auto shadow-sm" 
+                       style="border-radius: 12px; font-weight: 600; padding: 12px;">
+                        View Analysis Report
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12 text-center py-5">
+            <div class="mb-4 text-muted">
+                <i class="fas fa-search-minus fa-4x"></i>
+            </div>
+            <p class="lead text-muted mb-3">
+                No applications found matching "{{ request.form.get('search_query', '') }}"
+            </p>
+            <button onclick="window.location.href='/'" class="btn btn-outline-secondary px-4 py-2">
+                Clear Search
+            </button>
+        </div>
+    {% endif %}
+</div>
+</div>
+
+<div class="container my-5 py-5 text-center" style="background: #6366f1; border-radius: 30px; color: white;">
+    <h2 class="font-weight-bold">Are you an App Developer?</h2>
+    <p class="mb-4" style="opacity: 0.9;">Ensure your reviews are genuine and protected from competitor attacks.</p>
+    <a href="/register" class="btn btn-light btn-lg px-5 font-weight-bold text-primary" style="border-radius: 50px;">Join SentiShield</a>
+</div>
+
+<footer class="footer py-5" style="background-color: #0f172a; color: #94a3b8; font-size: 0.9rem; border-top: 1px solid #1e293b;">
+    <div class="container">
+        <div class="row mb-4 text-center text-md-left">
+            <div class="col-md-6 mb-4">
+                <h5 class="text-white font-weight-bold mb-3"><i class="fas fa-shield-virus mr-2"></i>SENTISHIELD</h5>
+                <p style="max-width: 300px;">Protecting the digital ecosystem from review manipulation using state-of-the-art sentiment analysis.</p>
+            </div>
+            <div class="col-md-3 mb-4">
+                <h6 class="text-white font-weight-bold">Quick Links</h6>
+                <ul class="list-unstyled">
+                    <li><a href="/" class="text-muted">Home</a></li>
+                    <li><a href="/register" class="text-muted">Register</a></li>
+                    <li><a href="/user/login" class="text-muted">Login</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 mb-4">
+                <h6 class="text-white font-weight-bold">Contact</h6>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-envelope mr-2"></i> support@sentishield.ai</li>
+                    <li><i class="fas fa-globe mr-2"></i> www.sentishield.ai</li>
+                </ul>
+            </div>
+        </div>
+        <hr style="background: #1e293b;">
+        <div class="text-center pt-3">
+            <span>© 2026 SentiShield AI Analysis Hub. All rights reserved.</span>
+        </div>
+    </div>
+</footer>
+
+<style>
+    .hover-card {
+        transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    }
+    .hover-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    }
+    .uppercase { text-transform: uppercase; letter-spacing: 1px; font-size: 0.7rem; }
+</style>
+
+{% endblock %}

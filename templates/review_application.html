@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% block title %}Analyze {{ application[1] }} | SentiShield{% endblock %}
+
+{% block content %}
+<div class="container mt-4 pb-5">
+
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb bg-transparent p-0">
+            <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Application Analysis</li>
+        </ol>
+    </nav>
+
+<div class="card border-0 shadow-lg mb-5" style="border-radius: 24px; overflow: hidden;">
+    <div class="row no-gutters">
+        <!-- Image Column -->
+        <div class="col-md-4 bg-light d-flex align-items-center justify-content-center p-4" 
+             style="border-right: 1px solid #edf2f7;">
+            <img src="{{ url_for('static', filename=application[6].replace('static/', '').replace('static\\', '').lstrip('/')) if application[6] else 'uploads/placeholder-app.png' }}"
+                 alt="{{ application[1] }}"
+                 class="img-fluid rounded shadow" 
+                 style="max-height: 260px; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.12));">
+        </div>
+
+        <!-- Details Column -->
+        <div class="col-md-8 p-4 p-md-5">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-3">
+                <div>
+                    <h2 class="font-weight-bold mb-1" style="color: #0f172a;">
+                        {{ application[1] }}
+                    </h2>
+                    <div class="d-flex align-items-center gap-2 flex-wrap mt-2">
+                        <span class="badge badge-pill badge-primary px-3 py-2">
+                            {{ application[5] | default('General') }}
+                        </span>
+                        <span class="text-warning font-weight-bold d-flex align-items-center">
+                            <i class="fas fa-star mr-1"></i> 
+                            {{ application[4] | round(1) if application[4] else 'N/A' }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Status Display -->
+                <div class="text-right">
+                    {% if application[7] == 'fraud' %}
+                        <div class="badge badge-danger px-4 py-2" style="font-size: 1.1rem; border-radius: 12px;">
+                            <i class="fas fa-exclamation-triangle mr-2"></i> Flagged as Fraud
+                        </div>
+                        <small class="text-danger d-block mt-1">This application has been flagged as potentially fraudulent by admin review.</small>
+                    {% else %}
+                        <div class="badge badge-success px-4 py-2" style="font-size: 1.1rem; border-radius: 12px;">
+                            <i class="fas fa-check-circle mr-2"></i> Genuine
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Description -->
+            <p class="text-muted mb-4" style="font-size: 1.05rem; line-height: 1.7;">
+                {{ application[3] | safe }}
+            </p>
+
+            <!-- Link + Extra Info -->
+            <div class="d-flex flex-wrap gap-3 mt-4">
+                {% if application[2] %}
+                <a href="{{ application[2] }}" target="_blank" rel="noopener noreferrer" 
+                   class="btn btn-outline-secondary">
+                    <i class="fas fa-external-link-alt mr-2"></i> Visit Official Page
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="row">
+        <div class="col-lg-5 mb-4">
+            <div class="sticky-top" style="top: 20px;">
+                <div class="card border-0 shadow-lg p-4" style="border-radius: 20px; background: #6366f1; color: white;">
+                    <h4 class="font-weight-bold mb-3">Submit Review</h4>
+                    <p class="small mb-4" style="opacity: 0.9;">Our NLP engine will analyze your input for sentiment polarity and authenticity markers.</p>
+                    
+                    <form method="POST">
+                        <div class="form-group">
+                            <textarea class="form-control border-0 shadow-none mb-3" 
+                                      id="review_text" 
+                                      name="review_text" 
+                                      rows="6" 
+                                      required 
+                                      placeholder="Describe your experience..."
+                                      style="border-radius: 15px; padding: 15px; font-size: 0.95rem;"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-light btn-block font-weight-bold py-3" style="border-radius: 15px; color: #6366f1;">
+                            Run AI Analysis & Post
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h4 class="font-weight-bold mb-0">Analysis Feed</h4>
+                <span class="text-muted small">{{ reviews|length }} Reports</span>
+            </div>
+
+            {% if reviews %}
+                {% for review in reviews %}
+                <div class="card border-0 shadow-sm mb-4 review-card" style="border-radius: 18px;">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light rounded-circle p-2 mr-3" style="width: 40px; height: 40px; text-align: center;">
+                                    <i class="fas fa-user text-muted"></i>
+                                </div>
+                                <div>
+                                    <h6 class="font-weight-bold mb-0" style="color: #1e293b;">
+                                        {% if review.user %}{{ review.user.username }}{% else %}User #{{ review[1] }}{% endif %}
+                                    </h6>
+                                    <small class="text-muted">{{ review[6].strftime('%d %b %Y') }}</small>
+                                </div>
+                            </div>
+                            {% if review[7] == 1 %}
+                            <span class="badge badge-danger p-2" style="border-radius: 8px;">
+                                <i class="fas fa-exclamation-triangle mr-1"></i> AI FLAGGED (SUSPICIOUS)
+                            </span>
+                            {% else %}
+                            <span class="badge badge-success p-2" style="border-radius: 8px;">
+                                <i class="fas fa-check-shield mr-1"></i> AUTHENTIC
+                            </span>
+                            {% endif %}
+                        </div>
+
+                        <p class="text-dark" style="line-height: 1.6; background: #f8fafc; padding: 15px; border-radius: 12px;">
+                            {{ review[3] }}
+                        </p>
+
+                        <div class="mt-3 d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <span class="small font-weight-bold text-muted uppercase mr-2">Sentiment:</span>
+                                <span class="badge {% if review[8] == 'Positive' %}bg-success{% elif review[8] == 'Negative' %}bg-danger{% else %}bg-warning{% endif %} text-white px-3 py-1">
+                                    {{ review[8] }} ({{ (review[4]) }}%)
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center bg-white p-5 rounded-lg shadow-sm">
+                    <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" width="80" class="mb-3 opacity-50">
+                    <p class="text-muted">No analysis data available for this app yet.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .uppercase { letter-spacing: 0.05em; font-size: 0.65rem; }
+    .review-card { transition: transform 0.2s ease; border: 1px solid #f1f5f9; }
+    .review-card:hover { transform: scale(1.01); border-color: #6366f1; }
+    .breadcrumb-item + .breadcrumb-item::before { content: "›"; font-size: 1.2rem; vertical-align: middle; }
+    .sticky-top { z-index: 10; }
+</style>
+{% endblock %}
